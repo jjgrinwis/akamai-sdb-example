@@ -33,7 +33,7 @@ variable "ip_behavior" {
 variable "domain_suffix" {
   description = "edgehostname suffix"
   type        = string
-  default     = "edgekey.net"
+  default     = "edgesuite.net"
 }
 
 variable "group_name" {
@@ -61,15 +61,4 @@ variable "edge_hostname" {
   description = "The origin hostname"
   type        = string
   default = "test-static.great-demo.com"
-}
-
-# security related information
-variable "security_configuration" {
-  description = "The active security configuration of the security policy you want to use."
-  type        = string
-}
-
-variable "security_policy" {
-  description = "The active security policy the hostnames should be attached to."
-  type        = string
 }

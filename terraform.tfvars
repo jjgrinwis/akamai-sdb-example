@@ -13,9 +13,3 @@ hostname = "sorin.great-demo.com"
 # this is an exising cpcode name connected to the right product (ion)
 # you can find cpcodes via akamai pm lcp -g grp_id -c ctr_id
 cpcode = "jgrinwis"
-
-# our security configuration
-security_configuration = "WAF Security File"
-
-# security policy to attach this property to. Security policy should be part of security config var.security_configuration
-security_policy = "Monitoring Only Security Policy"

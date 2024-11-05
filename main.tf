@@ -1,7 +1,4 @@
 # A basic config using Secure By Default (SBD) certs pointing to a origin and reusing same edgeHostname
-# EdgeDNS used to create the CNAME records for the SBD DV certs.
-
-# for cloud usage these vars have been defined in terraform cloud as a set
 # Configure the Akamai Terraform Provider to use betajam credentials via .edgerc or TF_VAR environment vars.
 provider "akamai" {
   /* config {
@@ -32,7 +29,7 @@ locals {
 
   cp_code_id = tonumber(trimprefix(resource.akamai_cp_code.cp_code.id, "cpc_"))
 
-  // hostnames to add using same edgehostname.
+  // hostnames to add using same edgehostname in a dynamic block
   hostnames_config = [
     {
       cname_from             = var.hostname
@@ -47,6 +44,7 @@ locals {
   ]
 
 }
+
 
 # for the demo don't create cpcode's over and over again, just reuse existing one
 # if cpcode already existst it will take the existing one.
@@ -64,6 +62,7 @@ resource "akamai_property" "aka_property" {
   product_id  = resource.akamai_cp_code.cp_code.product_id
 
   # our secure by default example use a fixed edgehostname.
+  # no need to create separate edgehostname resource when using secure by default (SBD) certs.
   dynamic "hostnames" {
     for_each = local.hostnames_config
     content {
@@ -76,15 +75,10 @@ resource "akamai_property" "aka_property" {
   # we could use the akamai_template but trying standard templatefile() for a change.
   # we might want to add cpcode in here which is statically configured now
   rules = templatefile("akamai_config/config.tftpl", { origin_hostname = var.origin_hostname, cp_code_id = local.cp_code_id, cp_code_name = var.cpcode })
-
-  # we need to wait a bit as delivery will verify if origin is already active
-  # if still being build HTTPs won't work so activation of property will fail.
-  # in a next version me might want to try the provioner option
-}
+ }
 
 # let's activate this property on staging
 # staging will always use latest version but when useing on production a version number should be provided.
-/*
 resource "akamai_property_activation" "aka_staging" {
   property_id = resource.akamai_property.aka_property.id
   contact     = [var.email]
@@ -93,8 +87,8 @@ resource "akamai_property_activation" "aka_staging" {
   note        = "Action triggered by Terraform."
   auto_acknowledge_rule_warnings = true
 }
-*/
 
+/*
 resource "akamai_property_activation" "aka_production" {
   property_id = resource.akamai_property.aka_property.id
   contact     = [var.email]
@@ -103,3 +97,4 @@ resource "akamai_property_activation" "aka_production" {
   note        = "Action triggered by Terraform."
   auto_acknowledge_rule_warnings = true
 }
+*/
