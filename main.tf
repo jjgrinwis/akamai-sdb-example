@@ -32,6 +32,20 @@ locals {
 
   cp_code_id = tonumber(trimprefix(resource.akamai_cp_code.cp_code.id, "cpc_"))
 
+  // hostnames to add using same edgehostname.
+  hostnames_config = [
+    {
+      cname_from             = var.hostname
+      cname_to               = "${var.edge_hostname}.${var.domain_suffix}"
+      cert_provisioning_type = "DEFAULT"
+    },
+    {
+      cname_from             = "test.test.nl"
+      cname_to               = "${var.edge_hostname}.${var.domain_suffix}"
+      cert_provisioning_type = "DEFAULT"
+    }
+  ]
+
 }
 
 # for the demo don't create cpcode's over and over again, just reuse existing one
@@ -49,13 +63,15 @@ resource "akamai_property" "aka_property" {
   group_id    = data.akamai_contract.contract.group_id
   product_id  = resource.akamai_cp_code.cp_code.product_id
 
-  # our pretty static hostname configuration so a simple 1:1 between front-end and back-end
-  hostnames {
-    cname_from = var.hostname
-    cname_to   = "${var.edge_hostname}.${var.domain_suffix}"
-    cert_provisioning_type = "DEFAULT"
+  # our secure by default example use a fixed edgehostname.
+  dynamic "hostnames" {
+    for_each = local.hostnames_config
+    content {
+      cname_from             = hostnames.value.cname_from
+      cname_to               = hostnames.value.cname_to
+      cert_provisioning_type = hostnames.value.cert_provisioning_type
+    }
   }
-
   # our pretty static rules file. Only dynamic part is the origin name
   # we could use the akamai_template but trying standard templatefile() for a change.
   # we might want to add cpcode in here which is statically configured now
