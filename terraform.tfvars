@@ -8,7 +8,7 @@ email = "nobody@akamai.com"
 domain_suffix = "edgekey.net"
 
 # property name
-hostname = "sorin.great-demo.com"
+hostname = "test-me.great-demo.com"
 
 # this is an exising cpcode name connected to the right product (ion)
 # you can find cpcodes via akamai pm lcp -g grp_id -c ctr_id

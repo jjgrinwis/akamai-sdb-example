@@ -37,12 +37,11 @@ locals {
       cert_provisioning_type = "DEFAULT"
     },
     {
-      cname_from             = "test.test.nl"
+      cname_from             = "test-me-2.great-demo.com"
       cname_to               = "${var.edge_hostname}.${var.domain_suffix}"
       cert_provisioning_type = "DEFAULT"
     }
   ]
-
 }
 
 
@@ -73,7 +72,6 @@ resource "akamai_property" "aka_property" {
   }
   # our pretty static rules file. Only dynamic part is the origin name
   # we could use the akamai_template but trying standard templatefile() for a change.
-  # we might want to add cpcode in here which is statically configured now
   rules = templatefile("akamai_config/config.tftpl", { origin_hostname = var.origin_hostname, cp_code_id = local.cp_code_id, cp_code_name = var.cpcode })
  }
 
@@ -88,7 +86,7 @@ resource "akamai_property_activation" "aka_staging" {
   auto_acknowledge_rule_warnings = true
 }
 
-/*
+
 resource "akamai_property_activation" "aka_production" {
   property_id = resource.akamai_property.aka_property.id
   contact     = [var.email]
@@ -97,4 +95,3 @@ resource "akamai_property_activation" "aka_production" {
   note        = "Action triggered by Terraform."
   auto_acknowledge_rule_warnings = true
 }
-*/
